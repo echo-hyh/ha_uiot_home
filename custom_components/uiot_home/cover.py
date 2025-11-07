@@ -128,12 +128,12 @@ class Cover(CoverEntity, RestoreEntity):
 
         self._attr_device_info = {
             "identifiers": {(f"{DOMAIN}", f"{self._attr_unique_id}")},
-            "name": f"{dev_data.get('deviceName', "")}",
+            "name": f"{dev_data.get('deviceName', '')}",
             "manufacturer": f"{COMPANY}",
-            "model": f"{dev_data.get('model', "")}",
-            "suggested_area": f"{dev_data.get('roomName', "")}",
-            "sw_version": f"{dev_data.get('softwareVersion', "")}",
-            "hw_version": f"{dev_data.get('hardwareVersion', "")}",
+            "model": f"{dev_data.get('model', '')}",
+            "suggested_area": f"{dev_data.get('roomName', '')}",
+            "sw_version": f"{dev_data.get('softwareVersion', '')}",
+            "hw_version": f"{dev_data.get('hardwareVersion', '')}",
         }
         _LOGGER.debug("初始化设备: %s", self._attr_name)
 

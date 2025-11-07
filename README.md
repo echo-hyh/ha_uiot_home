@@ -99,6 +99,15 @@ After logging in successfully, a list of all host families under the user's acco
 | Hvac control module                                          | Brand air conditioners (on, off, mode, temperature, wind speed), brand fresh air systems (on, off, wind speed), brand floor heating (on, off, temperature) |
 | Smart voice Speaker X10                                      | Voice control of devices in HA (plug-in supported, ready for use after platform upgrade) |
 | Fan coil unit temperature controller (3H1)                   | on、off、mode、 temperature、wind speed                      |
+| Intelligent color-changing light                             | switch、brightness、color temperature、color                 |
+| Intelligent dimming spotlight                                | switch、brightness                                           |
+| Central Air Conditioning Smart Gateway PRO                   | on、off、mode、 temperature、wind speed                      |
+| Switch Intelligent Controller Type Ⅰ                         | switch                                                       |
+| Switch Intelligent Controller Type Ⅱ                         | switch                                                       |
+| Switch Intelligent Controller Type Ⅲ                         | switch                                                       |
+| Single-circuit switch (single fire) E series                 | switch                                                       |
+| Dual-circuit switch (single fire) E series                   | switch                                                       |
+| Three-way switch (single fire) E series                      | switch                                                       |
 
 ## FAQ
 

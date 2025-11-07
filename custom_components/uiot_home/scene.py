@@ -126,7 +126,7 @@ class UiotScene(SceneEntity):
         return True
 
     @property
-    def name(self) -> str:
+    def name(self) -> str | None:
         """Return name of the scene."""
         return self._attr_name
 

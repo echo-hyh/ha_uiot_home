@@ -387,7 +387,7 @@ class GenericSensor(SensorEntity):
     def __init__(self, senser_data, hass: HomeAssistant) -> None:
         """Init Generic Sensor Class."""
         self._sensor_type = senser_data.get("sensor_type")
-        self._unique_id = f"{self._sensor_type}_{senser_data.get("deviceId")}"
+        self._unique_id = f"{self._sensor_type}_{senser_data.get('deviceId')}"
         self._attr_unique_id = str(senser_data.get("deviceId"))
         self._attr_name = senser_data.get("name")
         self._attr_device_class = senser_data.get("device_class")
@@ -406,12 +406,12 @@ class GenericSensor(SensorEntity):
 
         self._attr_device_info = {
             "identifiers": {(f"{DOMAIN}", f"{self._attr_unique_id}")},
-            "name": f"{senser_data.get("deviceName", "")}",
+            "name": f"{senser_data.get('deviceName', '')}",
             "manufacturer": f"{COMPANY}",
-            "suggested_area": f"{senser_data.get('roomName', "")}",
-            "model": f"{senser_data.get('model', "")}",
-            "sw_version": f"{senser_data.get('softwareVersion', "")}",
-            "hw_version": f"{senser_data.get('hardwareVersion', "")}",
+            "suggested_area": f"{senser_data.get('roomName', '')}",
+            "model": f"{senser_data.get('model', '')}",
+            "sw_version": f"{senser_data.get('softwareVersion', '')}",
+            "hw_version": f"{senser_data.get('hardwareVersion', '')}",
         }
         _LOGGER.debug("初始化设备: %s", self._attr_name)
         _LOGGER.debug("deviceId=%s", self._unique_id)
@@ -430,18 +430,23 @@ class GenericSensor(SensorEntity):
         if "online_report" in msg.topic:
             data = msg_data.get("data")
             devices_data = data.get("deviceList")
-            for d in devices_data:
-                deviceId = d.get("deviceId", "")
-                netState = d.get("netState", "")
-                if str(deviceId) == self._attr_unique_id:
-                    _LOGGER.debug(
-                        "设备在线状态变化 deviceId: %d,netState:%d", deviceId, netState
-                    )
-                    if netState == 0:
-                        self._attr_available = False
-                    else:
-                        self._attr_available = True
-                    self.async_write_ha_state()
+            if devices_data is not None:
+                for d in devices_data:
+                    deviceId = d.get("deviceId", "")
+                    netState = d.get("netState", "")
+                    if str(deviceId) == self._attr_unique_id:
+                        _LOGGER.debug(
+                            "设备在线状态变化 deviceId: %d,netState:%d",
+                            deviceId,
+                            netState,
+                        )
+                        if netState == 0:
+                            self._attr_available = False
+                        else:
+                            self._attr_available = True
+                        self.async_write_ha_state()
+            else:
+                _LOGGER.debug("devices_data is None, skipping loop")
             return
 
         try:

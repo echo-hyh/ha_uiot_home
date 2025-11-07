@@ -98,6 +98,7 @@ class UIOTMqttClient:
         app_key = self._config.app_key
         host_sn = self._config.host_sn
         self._mqtt_topic = "uiotsdk" + "/" + app_key + "/+/" + host_sn + "/#"
+        _LOGGER.debug("self._mqtt_topic: %s", self._mqtt_topic)
         self._client.subscribe(self._mqtt_topic)
 
         cur_mqtt_topic = "uiotop" + "/" + app_key + "/" + host_sn + "/#"

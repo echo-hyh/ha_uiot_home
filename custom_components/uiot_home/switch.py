@@ -146,10 +146,10 @@ class Switch(SwitchEntity):
             "identifiers": {(f"{DOMAIN}", f"{self.mac}")},
             "name": f"{deviceName}",
             "manufacturer": f"{COMPANY}",
-            "suggested_area": f"{switch_data.get('roomName', "")}",
-            "model": f"{switch_data.get('model', "")}",
-            "sw_version": f"{switch_data.get('softwareVersion', "")}",
-            "hw_version": f"{switch_data.get('hardwareVersion', "")}",
+            "suggested_area": f"{switch_data.get('roomName', '')}",
+            "model": f"{switch_data.get('model', '')}",
+            "sw_version": f"{switch_data.get('softwareVersion', '')}",
+            "hw_version": f"{switch_data.get('hardwareVersion', '')}",
         }
         _LOGGER.debug("初始化设备: %s", self._attr_name)
         _LOGGER.debug("deviceId=%s", self._attr_unique_id)
@@ -170,18 +170,23 @@ class Switch(SwitchEntity):
         if "online_report" in msg.topic:
             data = msg_data.get("data")
             devices_data = data.get("deviceList")
-            for d in devices_data:
-                deviceId = d.get("deviceId", "")
-                netState = d.get("netState", "")
-                if str(deviceId) == self._attr_unique_id:
-                    _LOGGER.debug(
-                        "设备在线状态变化 deviceId: %d,netState:%d", deviceId, netState
-                    )
-                    if netState == 0:
-                        self._attr_available = False
-                    else:
-                        self._attr_available = True
-                    self.async_write_ha_state()
+            if devices_data is not None:
+                for d in devices_data:
+                    deviceId = d.get("deviceId", "")
+                    netState = d.get("netState", "")
+                    if str(deviceId) == self._attr_unique_id:
+                        _LOGGER.debug(
+                            "设备在线状态变化 deviceId: %d,netState:%d",
+                            deviceId,
+                            netState,
+                        )
+                        if netState == 0:
+                            self._attr_available = False
+                        else:
+                            self._attr_available = True
+                        self.async_write_ha_state()
+            else:
+                _LOGGER.debug("devices_data is None, skipping loop")
             return
 
         try:

@@ -221,12 +221,12 @@ class Light(LightEntity):
 
         self._attr_device_info = {
             "identifiers": {(f"{DOMAIN}", f"{self.mac}")},
-            "name": f"{light_data.get('deviceName', "")}",
+            "name": f"{light_data.get('deviceName', '')}",
             "manufacturer": f"{COMPANY}",
-            "model": f"{light_data.get('model', "")}",
-            "suggested_area": f"{light_data.get('roomName', "")}",
-            "sw_version": f"{light_data.get('softwareVersion', "")}",
-            "hw_version": f"{light_data.get('hardwareVersion', "")}",
+            "model": f"{light_data.get('model', '')}",
+            "suggested_area": f"{light_data.get('roomName', '')}",
+            "sw_version": f"{light_data.get('softwareVersion', '')}",
+            "hw_version": f"{light_data.get('hardwareVersion', '')}",
         }
         _LOGGER.debug("初始化设备: %s", self._attr_name)
 
@@ -272,7 +272,7 @@ class Light(LightEntity):
             else:
                 self._attr_supported_color_modes.add(ColorMode.BRIGHTNESS)
                 self._attr_color_mode = ColorMode.BRIGHTNESS
-            self._attr_brightness = (
+            self._attr_brightness = int(
                 int(properties_data.get("brightness", 1)) * 255 / 100
             )
 
@@ -292,18 +292,23 @@ class Light(LightEntity):
         if "online_report" in msg.topic:
             data = msg_data.get("data")
             devices_data = data.get("deviceList")
-            for d in devices_data:
-                deviceId = d.get("deviceId", "")
-                netState = d.get("netState", "")
-                if str(deviceId) == self._attr_unique_id:
-                    _LOGGER.debug(
-                        "设备在线状态变化 deviceId: %d,netState:%d", deviceId, netState
-                    )
-                    if netState == 0:
-                        self._attr_available = False
-                    else:
-                        self._attr_available = True
-                    self.async_write_ha_state()
+            if devices_data is not None:
+                for d in devices_data:
+                    deviceId = d.get("deviceId", "")
+                    netState = d.get("netState", "")
+                    if str(deviceId) == self._attr_unique_id:
+                        _LOGGER.debug(
+                            "设备在线状态变化 deviceId: %d,netState:%d",
+                            deviceId,
+                            netState,
+                        )
+                        if netState == 0:
+                            self._attr_available = False
+                        else:
+                            self._attr_available = True
+                        self.async_write_ha_state()
+            else:
+                _LOGGER.debug("devices_data is None, skipping loop")
             return
 
         try:
@@ -362,7 +367,7 @@ class Light(LightEntity):
         return self._attr_available
 
     @property
-    def name(self) -> str:
+    def name(self) -> str | None:
         """Return name."""
         return self._attr_name
 
@@ -401,18 +406,19 @@ class Light(LightEntity):
         if kwargs.get("color_temp_kelvin"):
             self._attr_color_temp_kelvin = kwargs.get("color_temp_kelvin")
             self._attr_color_mode = ColorMode.COLOR_TEMP
-            min_value = self._attr_min_color_temp_kelvin
-            max_value = self._attr_max_color_temp_kelvin
+            min_value = self._attr_min_color_temp_kelvin or 2700
+            max_value = self._attr_max_color_temp_kelvin or 6500
+            current_temp = kwargs.get("color_temp_kelvin") or min_value
             color_temp = 100 - int(
-                (kwargs.get("color_temp_kelvin") - min_value)
-                * 100
-                / (max_value - min_value)
+                (current_temp - min_value) * 100 / (max_value - min_value)
             )
             msg_data["colorTemperature"] = str(color_temp)
 
         if kwargs.get("rgb_color"):
             self._attr_rgb_color = kwargs.get("rgb_color")
             self._attr_color_mode = ColorMode.RGB
+            if self._attr_rgb_color is None:
+                raise ValueError("缺少 rgb_color 参数，无法转换为十六进制")
             # 将RGB值转换为十六进制字符串
             r = self._attr_rgb_color[0]
             g = self._attr_rgb_color[1]

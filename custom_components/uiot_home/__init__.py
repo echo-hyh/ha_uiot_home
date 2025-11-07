@@ -140,7 +140,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         if retries < MAX_RETRIES:
             _LOGGER.info("Retrying in %d seconds", RETRY_DELAY)
             await asyncio.sleep(RETRY_DELAY)  # 等待一段时间后重试
-
     mqtt_client = UIOTMqttClient(hass, MQTT_BROKER, MQTT_PORT, config=config)
     hass.data[DOMAIN]["mqtt_client"] = mqtt_client
     hass.data[DOMAIN][cur_entry_id]["mqtt_client"] = mqtt_client
